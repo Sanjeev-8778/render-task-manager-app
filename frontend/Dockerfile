@@ -1,28 +1,20 @@
-# Use an official Node.js image
+# Step 1: Use Node to build the app
 FROM node:18-alpine as build
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json ./
-
-# Install dependencies
+COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the app
 COPY . .
-
-# Build the app
 RUN npm run build
 
-# Use nginx to serve the build
-FROM nginx:stable-alpine
+# Step 2: Use Nginx to serve the build
+FROM nginx:alpine
 
-# Copy the build output to nginx's html folder
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Copy custom nginx config if you have one (optional)
+# Optional: Copy custom nginx config if needed
 # COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
